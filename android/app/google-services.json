@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "783930733493",
+    "project_id": "studymap-6c7b8",
+    "storage_bucket": "studymap-6c7b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:783930733493:android:cbbdf72ddb68acff105ffc",
+        "android_client_info": {
+          "package_name": "com.example.studymap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "783930733493-f7loe6qlb00aj8m5g9pr3a2l5odvr3go.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGXwTdfsCZ3JXhbhg0JU5Dbj_JV3wBEGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "783930733493-f7loe6qlb00aj8m5g9pr3a2l5odvr3go.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
