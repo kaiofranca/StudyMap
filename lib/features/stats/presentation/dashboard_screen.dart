@@ -15,7 +15,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<StatsController>().loadStats();
+      if (mounted) {
+        context.read<StatsController>().loadStats();
+      }
     });
   }
 

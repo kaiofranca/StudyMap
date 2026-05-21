@@ -22,9 +22,9 @@ class SessionEntity extends Entity {
     required this.longitude,
   });
 
-  int get durationInMinutes {
+  double get durationInMinutes {
     if (endTime == null) return 0;
-    return endTime!.difference(startTime).inMinutes;
+    return endTime!.difference(startTime).inSeconds / 60.0;
   }
 
   double calculateProductivity() {

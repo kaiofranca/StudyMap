@@ -5,7 +5,6 @@ import 'start_session_modal.dart';
 import 'finish_session_modal.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../main/presentation/data_management_screen.dart';
-import '../../stats/presentation/dashboard_screen.dart';
 
 class SessionScreen extends StatelessWidget {
   const SessionScreen({super.key});
@@ -18,13 +17,6 @@ class SessionScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('StudyMap'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.bar_chart),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const DashboardScreen()),
-            ),
-          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.push(
