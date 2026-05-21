@@ -1,50 +1,28 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Constituição do Projeto StudyMap
 
-## Core Principles
+## 1. Arquitetura Obrigatória
+O aplicativo Flutter utiliza a abordagem **Feature-First** com **Clean Architecture**. 
+Toda nova funcionalidade DEVE ser criada dentro do diretório `lib/features/<nome_da_feature>/`, dividida obrigatoriamente nas seguintes subcamadas:
+- `data/`
+- `domain/`
+- `presentation/`
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+## 2. Regras de Modificação (Atenção)
+- O projeto já possui as pastas estruturais e o Firebase configurado (incluindo o arquivo `firebase_options.dart`).
+- **NUNCA** apague arquivos de configuração, o `main.dart` atual ou diretórios base existentes. Apenas adicione novos arquivos ou popule os existentes.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+## 3. Stack Tecnológica Restrita
+Você deve utilizar estritamente os seguintes pacotes para resolver os problemas:
+- **Banco de Dados e Autenticação:** `cloud_firestore` e `firebase_auth` (Paradigma NoSQL via subcoleções).
+- **Gerência de Estado:** `provider`.
+- **Mapas/GPS:** `geolocator`.
+- **Gráficos:** `fl_chart`.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+## 4. Padrão de Interface (UI)
+- **Design System:** Material Design 3.
+- **Tema:** Dark Mode (Tema Escuro) como padrão, refletindo os wireframes.
+- **Cor Primária:** Roxo (`#6750A4`).
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
-
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
-
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
-
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
-
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+## 5. Entrypoint e Rotas
+- O ponto de entrada é obrigatório ser o `lib/main.dart`.
+- As configurações de MaterialApp, tema e rotas globais devem residir em `lib/app/app_widget.dart`.
