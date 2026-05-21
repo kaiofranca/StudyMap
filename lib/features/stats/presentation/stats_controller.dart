@@ -24,12 +24,18 @@ class StatsController extends ChangeNotifier {
       
       _productivityByPlace = {};
       for (var place in places) {
-        final placeSessions = _sessions.where((s) => s.placeId == place.id);
-        final totalProductivity = placeSessions.fold(0.0, (sum, s) => sum + s.calculateProductivity());
+        final placeSessions = _sessions.where((s) => s.placeId == place.id).toList();
+        
+        final totalProductivity = placeSessions.fold(0.0, (sum, s) {
+          return sum + s.calculateProductivity();
+        });
+        
         if (totalProductivity > 0) {
           _productivityByPlace[place.name] = totalProductivity;
         }
       }
+    } catch (e) {
+      // Error handling can be improved with a proper UI message if needed
     } finally {
       _setLoading(false);
     }

@@ -55,7 +55,7 @@ class SessionController extends ChangeNotifier {
   Future<void> stopSession(int focusLevel) async {
     if (_currentSession == null) return;
 
-    final updatedSession = SessionEntity(
+    final sessionToSave = SessionEntity(
       id: _currentSession!.id,
       startTime: _currentSession!.startTime,
       endTime: DateTime.now(),
@@ -66,7 +66,7 @@ class SessionController extends ChangeNotifier {
       longitude: _currentSession!.longitude,
     );
 
-    await _repository.save(updatedSession);
+    await _repository.save(sessionToSave);
     _stopTimer();
     _currentSession = null;
     notifyListeners();

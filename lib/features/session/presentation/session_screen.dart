@@ -53,13 +53,6 @@ class _SessionScreenState extends State<SessionScreen> {
         title: const Text('StudyMap'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bar_chart),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const DashboardScreen()),
-            ),
-          ),
-          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.push(
               context,
