@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../domain/session_entity.dart';
 import '../../../core/domain/repository.dart';
-import '../../../core/location/location_service.dart';
 
 class SessionController extends ChangeNotifier {
   Repository<SessionEntity> _repository;
@@ -22,27 +21,33 @@ class SessionController extends ChangeNotifier {
     }
   }
 
-  Future<void> startSession() async {
-    final position = await LocationService.getCurrentLocation();
+  Future<void> startSession({
+    required String subjectId,
+    required String placeId,
+    required double latitude,
+    required double longitude,
+  }) async {
     _currentSession = SessionEntity(
       id: '',
       startTime: DateTime.now(),
-      latitude: position.latitude,
-      longitude: position.longitude,
+      subjectId: subjectId,
+      placeId: placeId,
+      latitude: latitude,
+      longitude: longitude,
     );
     _startTimer();
     notifyListeners();
   }
 
-  Future<void> stopSession(String? subjectId, String? placeId, int focusLevel) async {
+  Future<void> stopSession(int focusLevel) async {
     if (_currentSession == null) return;
 
     final updatedSession = SessionEntity(
       id: _currentSession!.id,
       startTime: _currentSession!.startTime,
       endTime: DateTime.now(),
-      subjectId: subjectId,
-      placeId: placeId,
+      subjectId: _currentSession!.subjectId,
+      placeId: _currentSession!.placeId,
       focusLevel: focusLevel,
       latitude: _currentSession!.latitude,
       longitude: _currentSession!.longitude,

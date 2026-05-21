@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'session_controller.dart';
-import 'post_session_modal.dart';
+import 'start_session_modal.dart';
+import 'finish_session_modal.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../main/presentation/data_management_screen.dart';
 import '../../stats/presentation/dashboard_screen.dart';
@@ -53,32 +54,24 @@ class SessionScreen extends StatelessWidget {
             const SizedBox(height: 48),
             if (!sessionController.isSessionActive)
               ElevatedButton.icon(
-                onPressed: () async {
-                  try {
-                    await sessionController.startSession();
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Erro ao iniciar localização: $e')),
-                      );
-                    }
-                  }
-                },
+                onPressed: () => _showStartSessionModal(context),
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Iniciar Sessão'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               )
             else
               ElevatedButton.icon(
-                onPressed: () => _showPostSessionModal(context),
+                onPressed: () => _showFinishSessionModal(context),
                 icon: const Icon(Icons.stop),
                 label: const Text('Parar Sessão'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.error,
                   foregroundColor: Theme.of(context).colorScheme.onError,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               ),
           ],
@@ -94,12 +87,38 @@ class SessionScreen extends StatelessWidget {
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  void _showPostSessionModal(BuildContext context) {
+  Future<void> _showStartSessionModal(BuildContext context) async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const StartSessionModal(),
+    );
+
+    if (result != null && context.mounted) {
+      try {
+        await context.read<SessionController>().startSession(
+              subjectId: result['subjectId'],
+              placeId: result['placeId'],
+              latitude: result['latitude'],
+              longitude: result['longitude'],
+            );
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro ao iniciar sessão: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  void _showFinishSessionModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const PostSessionModal(),
+      builder: (_) => const FinishSessionModal(),
     );
   }
 }
