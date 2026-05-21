@@ -1,37 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_controller.dart';
-import 'signup_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final authController = context.watch<AuthController>();
 
     return Scaffold(
-      body: Padding(
+      appBar: AppBar(
+        title: const Text('Criar Conta'),
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'StudyMap',
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              'Junte-se ao StudyMap',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
                   ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Crie sua conta para começar a monitorar sua produtividade.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 48),
             TextField(
@@ -51,20 +58,46 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               obscureText: true,
             ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _confirmPasswordController,
+              decoration: const InputDecoration(
+                labelText: 'Confirmar Senha',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
+            ),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: authController.isLoading
                   ? null
                   : () async {
+                      if (_passwordController.text != _confirmPasswordController.text) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('As senhas não coincidem.')),
+                        );
+                        return;
+                      }
+
+                      if (_passwordController.text.length < 6) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('A senha deve ter pelo menos 6 caracteres.')),
+                        );
+                        return;
+                      }
+
                       try {
-                        await authController.login(
+                        await authController.registerWithEmail(
                           _emailController.text,
                           _passwordController.text,
                         );
+                        if (context.mounted) {
+                          Navigator.of(context).pop(); // Volta para o AuthWrapper que decidirá para onde ir
+                        }
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Erro ao entrar: $e')),
+                            SnackBar(content: Text('Erro ao cadastrar: $e')),
                           );
                         }
                       }
@@ -79,38 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Entrar'),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: authController.isLoading
-                  ? null
-                  : () async {
-                      try {
-                        await authController.loginWithGoogle();
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Erro ao entrar com Google: $e')),
-                          );
-                        }
-                      }
-                    },
-              icon: const Icon(Icons.login),
-              label: const Text('Entrar com Google'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SignupScreen()),
-                );
-              },
-              child: const Text('Não tem uma conta? Cadastre-se'),
+                  : const Text('Criar Conta'),
             ),
           ],
         ),

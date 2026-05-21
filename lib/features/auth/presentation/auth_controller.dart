@@ -27,6 +27,24 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  Future<void> registerWithEmail(String email, String password) async {
+    _setLoading(true);
+    try {
+      await _authRepository.registerWithEmailAndPassword(email, password);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> loginWithGoogle() async {
+    _setLoading(true);
+    try {
+      await _authRepository.loginWithGoogle();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> logout() async {
     await _authRepository.logout();
   }
