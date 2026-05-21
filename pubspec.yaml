@@ -35,6 +35,7 @@ dependencies:
   # Utilitários
   intl: ^0.20.1
   uuid: ^4.4.2
+  google_maps_flutter: ^2.17.0
 
 dev_dependencies:
   flutter_test:
