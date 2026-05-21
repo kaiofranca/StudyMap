@@ -1,24 +1,37 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../domain/session_entity.dart';
 import '../../../core/domain/repository.dart';
+import '../../places/domain/place_entity.dart';
 
 class SessionController extends ChangeNotifier {
   Repository<SessionEntity> _repository;
   SessionEntity? _currentSession;
   Timer? _timer;
   Duration _elapsed = Duration.zero;
+  Set<Marker> _markers = {};
 
   SessionController(this._repository);
 
   SessionEntity? get currentSession => _currentSession;
   bool get isSessionActive => _currentSession != null && _currentSession!.endTime == null;
   Duration get elapsed => _elapsed;
+  Set<Marker> get markers => _markers;
 
   void updateRepository(Repository<SessionEntity>? repo) {
     if (repo != null) {
       _repository = repo;
     }
+  }
+
+  void updateMarkers(List<PlaceEntity> places) {
+    _markers = places.map((place) => Marker(
+      markerId: MarkerId(place.id),
+      position: LatLng(place.latitude, place.longitude),
+      infoWindow: InfoWindow(title: place.name),
+    )).toSet();
+    notifyListeners();
   }
 
   Future<void> startSession({

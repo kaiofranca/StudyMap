@@ -47,27 +47,45 @@ cd studymap
 # Baixar as dependências do Flutter
 flutter pub get
 ```
-### 2. Configuração do Firebase
-Por questões de segurança, as chaves do banco de dados (o arquivo `firebase_options.dart`) não são enviadas para o GitHub. Para rodar o projeto na sua máquina, você precisa conectá-lo ao seu próprio projeto do Firebase:
+### 2. Configuração do Backend (Firebase & Autenticação)
+Você precisará vincular o app ao seu próprio projeto do Firebase para que o banco de dados e o login funcionem.
 
-1. Crie um projeto no [Firebase Console](https://console.firebase.google.com/) e ative o **Authentication** e o **Firestore Database**.
-2. Instale o CLI do Firebase e faça login:
+1. Acesse o [Firebase Console](https://console.firebase.google.com/) e crie um novo projeto.
+2. Ative o **Firestore Database** (inicie em modo de teste) e o **Authentication** (ative os provedores *E-mail/Senha* e *Google*).
+3. No seu terminal, faça login na sua conta do Google e instale o assistente do FlutterFire:
    ```bash
    firebase login
-   ```
-3. Instale o FlutterFire CLI e configure o projeto:
-   ```bash
    dart pub global activate flutterfire_cli
+   ```
+4. Execute o comando de vinculação:
+   ```bash
    flutterfire configure
    ```
-   *(Selecione o projeto que você acabou de criar no painel do Firebase).*
+   *(Este comando vai gerar automaticamente o arquivo `lib/firebase_options.dart` e os arquivos `.json` nativos contendo as chaves públicas de conexão).*
 
-### 3. Compilar e rodar
-Com o emulador aberto ou celular conectado, execute:
+**Importante para o Google Login:** Para que o login com o Google funcione no Android, você precisa extrair a chave **SHA-1** do seu computador e adicioná-la nas configurações do app Android dentro do painel do Firebase.
+
+### 3. Configuração do Google Maps (API Key)
+O mapa interativo na tela de sessão exige uma chave de API do Google Cloud injetada de forma segura durante a compilação.
+
+1. Acesse o [Google Cloud Console](https://console.cloud.google.com/).
+2. Crie ou selecione um projeto e ative a biblioteca **Maps SDK for Android**.
+3. Gere uma credencial do tipo **Chave de API**.
+4. No seu projeto Flutter, abra o arquivo `android/local.properties` (se o arquivo não existir, crie-o na raiz da pasta `android/`).
+5. Adicione a sua chave no final do arquivo exatamente com esta sintaxe:
+   ```properties
+   MAPS_API_KEY=sua_chave_gerada_aqui
+   ```
+   *(Nota: O arquivo `local.properties` é ignorado pelo Git, garantindo que sua chave privada nunca vaze).*
+
+### 4. Compilar e rodar
+Com as chaves do Firebase geradas e a chave do Maps configurada, o projeto já pode ser executado!
+
+Com o emulador aberto ou celular conectado, rode:
 ```bash
-# Para rodar em modo de desenvolvimento (Hot Reload ativo)
+# Para rodar em modo de desenvolvimento (Hot Reload)
 flutter run
 
-# Para gerar um novo arquivo APK de instalação
+# Para compilar o APK de instalação
 flutter build apk --debug
 ```
