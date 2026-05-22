@@ -279,9 +279,13 @@ class _StartSessionModalState extends State<StartSessionModal> {
   }
 
   void _startSession() {
+    final subjectsController = context.read<SubjectsController>();
+    final subject = subjectsController.subjects.firstWhere((s) => s.id == _selectedSubjectId);
+    
     Navigator.pop(context, {
       'placeId': _selectedPlaceId,
       'subjectId': _selectedSubjectId,
+      'subjectName': subject.name,
       'latitude': _currentPosition!.latitude,
       'longitude': _currentPosition!.longitude,
     });

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../domain/session_entity.dart';
 import '../../../core/domain/repository.dart';
+import '../../../core/notifications/notification_service.dart';
 import '../../places/domain/place_entity.dart';
 
 class SessionController extends ChangeNotifier {
@@ -11,11 +12,17 @@ class SessionController extends ChangeNotifier {
   Timer? _timer;
   Duration _elapsed = Duration.zero;
   Set<Marker> _markers = {};
+  
+  String? _currentSubjectName;
+  bool _isPaused = false;
+  Duration _accumulatedTime = Duration.zero;
+  DateTime? _lastStartTime;
 
   SessionController(this._repository);
 
   SessionEntity? get currentSession => _currentSession;
   bool get isSessionActive => _currentSession != null && _currentSession!.endTime == null;
+  bool get isPaused => _isPaused;
   Duration get elapsed => _elapsed;
   Set<Marker> get markers => _markers;
 
@@ -36,6 +43,7 @@ class SessionController extends ChangeNotifier {
 
   Future<void> startSession({
     required String subjectId,
+    required String subjectName,
     required String placeId,
     required double latitude,
     required double longitude,
@@ -48,12 +56,47 @@ class SessionController extends ChangeNotifier {
       latitude: latitude,
       longitude: longitude,
     );
+    _currentSubjectName = subjectName;
+    _isPaused = false;
+    _accumulatedTime = Duration.zero;
+    _lastStartTime = DateTime.now();
+    
     _startTimer();
+    NotificationService.showSessionOngoingNotification(subjectName: subjectName);
+    notifyListeners();
+  }
+
+  void pauseSession() {
+    if (!isSessionActive || _isPaused) return;
+
+    _isPaused = true;
+    if (_lastStartTime != null) {
+      _accumulatedTime += DateTime.now().difference(_lastStartTime!);
+      _lastStartTime = null;
+    }
+    
+    _stopTimer();
+    NotificationService.cancelSessionNotification();
+    notifyListeners();
+  }
+
+  void resumeSession() {
+    if (!isSessionActive || !_isPaused || _currentSubjectName == null) return;
+
+    _isPaused = false;
+    _lastStartTime = DateTime.now();
+    
+    _startTimer();
+    NotificationService.showSessionOngoingNotification(subjectName: _currentSubjectName!);
     notifyListeners();
   }
 
   Future<void> stopSession(int focusLevel) async {
     if (_currentSession == null) return;
+
+    if (!_isPaused && _lastStartTime != null) {
+      _accumulatedTime += DateTime.now().difference(_lastStartTime!);
+    }
 
     final sessionToSave = SessionEntity(
       id: _currentSession!.id,
@@ -69,14 +112,23 @@ class SessionController extends ChangeNotifier {
     await _repository.save(sessionToSave);
     _stopTimer();
     _currentSession = null;
+    _currentSubjectName = null;
+    _accumulatedTime = Duration.zero;
+    _lastStartTime = null;
+    _isPaused = false;
+    
+    NotificationService.cancelSessionNotification();
     notifyListeners();
   }
 
   void _startTimer() {
-    _elapsed = Duration.zero;
+    _timer?.cancel();
+    if (_currentSession != null && !_isPaused && _lastStartTime != null) {
+      _elapsed = _accumulatedTime + DateTime.now().difference(_lastStartTime!);
+    }
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_currentSession != null) {
-        _elapsed = DateTime.now().difference(_currentSession!.startTime);
+      if (_currentSession != null && !_isPaused && _lastStartTime != null) {
+        _elapsed = _accumulatedTime + DateTime.now().difference(_lastStartTime!);
         notifyListeners();
       }
     });
@@ -85,6 +137,6 @@ class SessionController extends ChangeNotifier {
   void _stopTimer() {
     _timer?.cancel();
     _timer = null;
-    _elapsed = Duration.zero;
+    // Não zeramos _elapsed aqui para manter o valor na UI se pausado
   }
 }

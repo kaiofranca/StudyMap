@@ -7,7 +7,6 @@ import 'start_session_modal.dart';
 import 'finish_session_modal.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../main/presentation/data_management_screen.dart';
-import '../../stats/presentation/dashboard_screen.dart';
 import '../../places/presentation/places_controller.dart';
 import '../../../core/location/location_service.dart';
 
@@ -131,20 +130,52 @@ class _SessionScreenState extends State<SessionScreen> {
             _formatDuration(controller.elapsed),
             style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: controller.isPaused 
+                    ? Theme.of(context).colorScheme.outline 
+                    : Theme.of(context).colorScheme.primary,
                 ),
           ),
-          const SizedBox(height: 48),
-          ElevatedButton.icon(
-            onPressed: () => _showFinishSessionModal(context),
-            icon: const Icon(Icons.stop),
-            label: const Text('Parar Sessão'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          if (controller.isPaused)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                'Sessão Pausada',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.outline,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
+          const SizedBox(height: 48),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () => controller.isPaused 
+                  ? controller.resumeSession() 
+                  : controller.pauseSession(),
+                icon: Icon(controller.isPaused ? Icons.play_arrow : Icons.pause),
+                label: Text(controller.isPaused ? 'Retomar' : 'Pausar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton.icon(
+                onPressed: () => _showFinishSessionModal(context),
+                icon: const Icon(Icons.stop),
+                label: const Text('Finalizar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -369,6 +400,7 @@ class _SessionScreenState extends State<SessionScreen> {
       try {
         await context.read<SessionController>().startSession(
               subjectId: result['subjectId'],
+              subjectName: result['subjectName'],
               placeId: result['placeId'],
               latitude: result['latitude'],
               longitude: result['longitude'],
