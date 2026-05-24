@@ -94,7 +94,7 @@ class _SessionScreenState extends State<SessionScreen> {
         Positioned(
           left: 24,
           right: 24,
-          bottom: 32,
+          bottom: 150,
           child: ElevatedButton(
             onPressed: () => _showStartSessionModal(context),
             style: ElevatedButton.styleFrom(
