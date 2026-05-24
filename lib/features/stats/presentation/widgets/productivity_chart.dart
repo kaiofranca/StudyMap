@@ -8,74 +8,110 @@ class ProductivityChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) return const Center(child: Text('Sem dados suficientes para gerar o gráfico.'));
+    if (data.isEmpty) {
+      return const Center(
+        child: Text('Sem dados suficientes para gerar o gráfico.'),
+      );
+    }
 
     final entries = data.entries.toList();
+    // Encontrar o valor máximo para normalização (base 1.0 para o trilho)
+    final maxVal = entries.fold<double>(
+        0.001, (prev, element) => element.value > prev ? element.value : prev);
 
     return BarChart(
       BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        maxY: (data.values.fold(0.0, (max, v) => v > max ? v : max) * 1.2).clamp(5.0, double.infinity),
-        barTouchData: BarTouchData(
-          touchTooltipData: BarTouchTooltipData(
-            getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              return BarTooltipItem(
-                '${entries[group.x].key}\n',
-                const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                children: [
-                  TextSpan(
-                    text: rod.toY.toStringAsFixed(1),
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
+        alignment: BarChartAlignment.center, // Centraliza para ocupar o espaço de forma justa
+        groupsSpace: 20, // Espaço entre grupos
+        barTouchData: BarTouchData(enabled: false),
+        maxY: 1.0,
+        minY: 0,
+        rotationQuarterTurns: 1,
         titlesData: FlTitlesData(
           show: true,
+          // Physical Left (Logical Bottom)
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
+              reservedSize: 84,
+              interval: 1,
               getTitlesWidget: (value, meta) {
                 final index = value.toInt();
                 if (index >= 0 && index < entries.length) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
+                  String label = entries[index].key;
+                  if (label.length > 10) label = '${label.substring(0, 8)}...';
+                  return SideTitleWidget(
+                    meta: meta,
+                    space: 8,
                     child: Text(
-                      entries[index].key.length > 8 ? '${entries[index].key.substring(0, 5)}...' : entries[index].key,
-                      style: const TextStyle(fontSize: 10),
+                      label,
+                      textAlign: TextAlign.end,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFC1C6D7),
+                      ),
                     ),
                   );
                 }
-                return const Text('');
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+          // Physical Right (Logical Top)
+          topTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 44,
+              interval: 1,
+              getTitlesWidget: (value, meta) {
+                final index = value.toInt();
+                if (index >= 0 && index < entries.length) {
+                  return SideTitleWidget(
+                    meta: meta,
+                    space: 4,
+                    child: Text(
+                      '${(entries[index].value).toStringAsFixed(0)}%',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF00EEFC),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
               },
             ),
           ),
           leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: true, reservedSize: 30),
+            sideTitles: SideTitles(showTitles: false, reservedSize: 0),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false, reservedSize: 0),
+          ),
         ),
-        gridData: const FlGridData(show: true, drawVerticalLine: false),
+        gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         barGroups: entries.asMap().entries.map((e) {
+          final normalizedValue = e.value.value / maxVal;
           return BarChartGroupData(
             x: e.key,
             barRods: [
               BarChartRodData(
-                toY: e.value.value,
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary,
-                  ],
+                toY: normalizedValue.clamp(0.08, 1.0),
+                width: 16, // Leve redução para equilíbrio
+                borderRadius: BorderRadius.circular(6),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4B8EFF), Color(0xFF00EEFC)],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
-                width: 20,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+                backDrawRodData: BackgroundBarChartRodData(
+                  show: true,
+                  toY: 1.0,
+                  color: const Color(0xFF282A2E),
+                ),
               ),
             ],
           );

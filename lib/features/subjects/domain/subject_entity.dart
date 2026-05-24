@@ -8,6 +8,16 @@ class SubjectEntity extends Entity {
     required this.name,
   });
 
+  SubjectEntity copyWith({
+    String? id,
+    String? name,
+  }) {
+    return SubjectEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'name': name,

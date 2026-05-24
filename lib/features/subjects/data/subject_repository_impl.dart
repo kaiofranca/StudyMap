@@ -27,11 +27,13 @@ class SubjectRepositoryImpl implements Repository<SubjectEntity> {
   }
 
   @override
-  Future<void> save(SubjectEntity entity) async {
+  Future<String> save(SubjectEntity entity) async {
     if (entity.id.isEmpty) {
-      await _collection.add(entity.toMap());
+      final doc = await _collection.add(entity.toMap());
+      return doc.id;
     } else {
       await _collection.doc(entity.id).set(entity.toMap());
+      return entity.id;
     }
   }
 

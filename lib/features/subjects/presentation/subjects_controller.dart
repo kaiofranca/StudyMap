@@ -28,9 +28,15 @@ class SubjectsController extends ChangeNotifier {
     }
   }
 
-  Future<void> addSubject(String name) async {
+  Future<SubjectEntity> addSubject(String name) async {
     final newSubject = SubjectEntity(id: '', name: name);
-    await _repository.save(newSubject);
+    final id = await _repository.save(newSubject);
+    await loadSubjects();
+    return newSubject.copyWith(id: id);
+  }
+
+  Future<void> deleteSubject(String id) async {
+    await _repository.delete(id);
     await loadSubjects();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_controller.dart';
+import '../../../core/widgets/gradient_button.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -68,52 +69,43 @@ class _SignupScreenState extends State<SignupScreen> {
               obscureText: true,
             ),
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: authController.isLoading
-                  ? null
-                  : () async {
-                      if (_passwordController.text != _confirmPasswordController.text) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('As senhas não coincidem.')),
-                        );
-                        return;
-                      }
+            if (authController.isLoading)
+              const Center(child: CircularProgressIndicator())
+            else
+              GradientButton(
+                label: 'Criar Conta',
+                onPressed: () async {
+                  if (_passwordController.text != _confirmPasswordController.text) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('As senhas não coincidem.')),
+                    );
+                    return;
+                  }
 
-                      if (_passwordController.text.length < 6) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('A senha deve ter pelo menos 6 caracteres.')),
-                        );
-                        return;
-                      }
+                  if (_passwordController.text.length < 6) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('A senha deve ter pelo menos 6 caracteres.')),
+                    );
+                    return;
+                  }
 
-                      try {
-                        await authController.registerWithEmail(
-                          _emailController.text,
-                          _passwordController.text,
-                        );
-                        if (context.mounted) {
-                          Navigator.of(context).pop(); // Volta para o AuthWrapper que decidirá para onde ir
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Erro ao cadastrar: $e')),
-                          );
-                        }
-                      }
-                    },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  try {
+                    await authController.registerWithEmail(
+                      _emailController.text,
+                      _passwordController.text,
+                    );
+                    if (context.mounted) {
+                      Navigator.of(context).pop(); // Volta para o AuthWrapper que decidirá para onde ir
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro ao cadastrar: $e')),
+                      );
+                    }
+                  }
+                },
               ),
-              child: authController.isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Criar Conta'),
-            ),
           ],
         ),
       ),

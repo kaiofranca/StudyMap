@@ -12,6 +12,20 @@ class PlaceEntity extends Entity {
     required this.longitude,
   });
 
+  PlaceEntity copyWith({
+    String? id,
+    String? name,
+    double? latitude,
+    double? longitude,
+  }) {
+    return PlaceEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'name': name,

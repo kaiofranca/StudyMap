@@ -27,11 +27,13 @@ class SessionRepositoryImpl implements Repository<SessionEntity> {
   }
 
   @override
-  Future<void> save(SessionEntity entity) async {
+  Future<String> save(SessionEntity entity) async {
     if (entity.id.isEmpty) {
-      await _collection.add(entity.toMap());
+      final doc = await _collection.add(entity.toMap());
+      return doc.id;
     } else {
       await _collection.doc(entity.id).set(entity.toMap());
+      return entity.id;
     }
   }
 

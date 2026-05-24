@@ -28,14 +28,20 @@ class PlacesController extends ChangeNotifier {
     }
   }
 
-  Future<void> addPlace(String name, double latitude, double longitude) async {
+  Future<PlaceEntity> addPlace(String name, double latitude, double longitude) async {
     final newPlace = PlaceEntity(
       id: '',
       name: name,
       latitude: latitude,
       longitude: longitude,
     );
-    await _repository.save(newPlace);
+    final id = await _repository.save(newPlace);
+    await loadPlaces();
+    return newPlace.copyWith(id: id);
+  }
+
+  Future<void> deletePlace(String id) async {
+    await _repository.delete(id);
     await loadPlaces();
   }
 

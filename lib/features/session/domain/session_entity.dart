@@ -4,7 +4,9 @@ class SessionEntity extends Entity {
   final DateTime startTime;
   final DateTime? endTime;
   final String? subjectId;
+  final String? subjectName;
   final String? placeId;
+  final String? placeName;
   final int? focusLevel; // 1-5
   final double? productivityIndex;
   final double latitude;
@@ -15,16 +17,18 @@ class SessionEntity extends Entity {
     required this.startTime,
     this.endTime,
     this.subjectId,
+    this.subjectName,
     this.placeId,
+    this.placeName,
     this.focusLevel,
     this.productivityIndex,
     required this.latitude,
     required this.longitude,
   });
 
-  int get durationInMinutes {
+  double get durationInMinutes {
     if (endTime == null) return 0;
-    return endTime!.difference(startTime).inMinutes;
+    return endTime!.difference(startTime).inSeconds / 60.0;
   }
 
   double calculateProductivity() {
@@ -38,7 +42,9 @@ class SessionEntity extends Entity {
       'startTime': startTime.toIso8601String(),
       'endTime': endTime?.toIso8601String(),
       'subjectId': subjectId,
+      'subjectName': subjectName,
       'placeId': placeId,
+      'placeName': placeName,
       'focusLevel': focusLevel,
       'productivityIndex': productivityIndex ?? calculateProductivity(),
       'latitude': latitude,
@@ -52,7 +58,9 @@ class SessionEntity extends Entity {
       startTime: DateTime.parse(map['startTime']),
       endTime: map['endTime'] != null ? DateTime.parse(map['endTime']) : null,
       subjectId: map['subjectId'],
+      subjectName: map['subjectName'],
       placeId: map['placeId'],
+      placeName: map['placeName'],
       focusLevel: map['focusLevel'],
       productivityIndex: (map['productivityIndex'] ?? 0.0).toDouble(),
       latitude: (map['latitude'] ?? 0.0).toDouble(),
