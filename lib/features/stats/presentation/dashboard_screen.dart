@@ -145,7 +145,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
         children: [
-          _MetricIcon(icon: icon, color: color),
+          _metricIcon(icon: icon, color: color),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,16 +172,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _MetricIcon({required IconData icon, required Color color}) {
+  Widget _metricIcon({required IconData icon, required Color color}) {
     return Container(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.30),
+            color: color.withValues(alpha: 0.30),
             blurRadius: 16,
             spreadRadius: 0,
           ),
@@ -216,18 +216,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
             height: 44,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: rankColor.withOpacity(0.12),
+              color: rankColor.withValues(alpha: 0.12),
               boxShadow: index <= 3
                   ? [
                       BoxShadow(
-                        color: rankColor.withOpacity(0.30),
+                        color: rankColor.withValues(alpha: 0.30),
                         blurRadius: 16,
                         spreadRadius: 0,
                       ),
                     ]
                   : null,
               border: index <= 3
-                  ? Border.all(color: rankColor.withOpacity(0.5), width: 1.5)
+                  ? Border.all(color: rankColor.withValues(alpha: 0.5), width: 1.5)
                   : null,
             ),
             alignment: Alignment.center,

@@ -14,6 +14,7 @@ class SessionController extends ChangeNotifier {
   Set<Marker> _markers = {};
   
   String? _currentSubjectName;
+  String? _currentPlaceName;
   bool _isPaused = false;
   Duration _accumulatedTime = Duration.zero;
   DateTime? _lastStartTime;
@@ -45,6 +46,7 @@ class SessionController extends ChangeNotifier {
     required String subjectId,
     required String subjectName,
     required String placeId,
+    required String placeName,
     required double latitude,
     required double longitude,
   }) async {
@@ -52,11 +54,14 @@ class SessionController extends ChangeNotifier {
       id: '',
       startTime: DateTime.now(),
       subjectId: subjectId,
+      subjectName: subjectName,
       placeId: placeId,
+      placeName: placeName,
       latitude: latitude,
       longitude: longitude,
     );
     _currentSubjectName = subjectName;
+    _currentPlaceName = placeName;
     _isPaused = false;
     _accumulatedTime = Duration.zero;
     _lastStartTime = DateTime.now();
@@ -103,7 +108,9 @@ class SessionController extends ChangeNotifier {
       startTime: _currentSession!.startTime,
       endTime: DateTime.now(),
       subjectId: _currentSession!.subjectId,
+      subjectName: _currentSubjectName,
       placeId: _currentSession!.placeId,
+      placeName: _currentPlaceName,
       focusLevel: focusLevel,
       latitude: _currentSession!.latitude,
       longitude: _currentSession!.longitude,
@@ -113,6 +120,7 @@ class SessionController extends ChangeNotifier {
     _stopTimer();
     _currentSession = null;
     _currentSubjectName = null;
+    _currentPlaceName = null;
     _accumulatedTime = Duration.zero;
     _lastStartTime = null;
     _isPaused = false;

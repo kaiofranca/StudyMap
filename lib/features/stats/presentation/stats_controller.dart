@@ -30,13 +30,32 @@ class StatsController extends ChangeNotifier {
       _sessions = await _sessionRepo.getAll();
       final places = await _placeRepo.getAll();
 
-      // Reset metrics
-      _totalSessions = _sessions.length;
+      _productivityByPlace = {};
+      
+      // Map active places by ID for quick lookup
+      final activePlaceIds = places.map((p) => p.id).toSet();
+      final activePlaceNames = places.map((p) => p.name).toSet();
+
+      // Filter sessions to only include those from active places
+      final activeSessions = _sessions.where((session) {
+        // If we have placeId, check if it's in the active list
+        if (session.placeId != null) {
+          return activePlaceIds.contains(session.placeId);
+        }
+        // Fallback for older sessions or sessions with only placeName
+        if (session.placeName != null) {
+          return activePlaceNames.contains(session.placeName);
+        }
+        return false;
+      }).toList();
+
+      // Reset metrics based on active sessions only
+      _totalSessions = activeSessions.length;
       _totalHours = 0.0;
       double totalFocusSum = 0.0;
       int sessionsWithFocus = 0;
 
-      for (var session in _sessions) {
+      for (var session in activeSessions) {
         if (session.endTime != null) {
           _totalHours += session.durationInMinutes / 60.0;
         }
@@ -48,22 +67,33 @@ class StatsController extends ChangeNotifier {
 
       _averageFocus = sessionsWithFocus > 0 ? totalFocusSum / sessionsWithFocus : 0.0;
 
-      _productivityByPlace = {};
-      for (var place in places) {
-        final placeSessions =
-            _sessions.where((s) => s.placeId == place.id).toList();
+      // Group active sessions by place name
+      final Map<String, List<SessionEntity>> sessionsByPlace = {};
+      for (var session in activeSessions) {
+        String? name = session.placeName;
+        
+        if (name == null && session.placeId != null) {
+          try {
+            name = places.firstWhere((p) => p.id == session.placeId).name;
+          } catch (_) {
+            continue; // Should not happen given the filter above
+          }
+        }
+        
+        if (name != null) {
+          sessionsByPlace.putIfAbsent(name, () => []).add(session);
+        }
+      }
 
+      sessionsByPlace.forEach((name, placeSessions) {
         final totalProductivity = placeSessions.fold(0.0, (sum, s) {
           return sum + s.calculateProductivity();
         });
 
         if (totalProductivity > 0) {
-          // Normalize by number of sessions to get an average index per place, 
-          // or keep as total if that's intended for ranking. 
-          // Re-scaling to percentage-like 0-100 for better chart display.
-          _productivityByPlace[place.name] = (totalProductivity / placeSessions.length) * 20; 
+          _productivityByPlace[name] = (totalProductivity / placeSessions.length) * 20; 
         }
-      }
+      });
     } catch (e) {
       // Error handling
     } finally {

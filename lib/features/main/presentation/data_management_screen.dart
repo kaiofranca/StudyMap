@@ -114,8 +114,33 @@ class _PlacesList extends StatelessWidget {
                 leading: const Icon(Icons.location_on_outlined),
                 title: Text(p.name),
                 subtitle: const Text('GPS: Coordenadas salvas'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () => _confirmDeletePlace(context, p.id, p.name),
+                ),
               ))
           .toList(),
+    );
+  }
+
+  void _confirmDeletePlace(BuildContext context, String id, String name) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remover Local'),
+        content: Text('Deseja realmente remover o local "$name"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () {
+              context.read<PlacesController>().deletePlace(id);
+              Navigator.pop(ctx);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Remover'),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -137,8 +162,33 @@ class _SubjectsList extends StatelessWidget {
           .map((s) => ListTile(
                 leading: const Icon(Icons.book_outlined),
                 title: Text(s.name),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () => _confirmDeleteSubject(context, s.id, s.name),
+                ),
               ))
           .toList(),
+    );
+  }
+
+  void _confirmDeleteSubject(BuildContext context, String id, String name) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remover Matéria'),
+        content: Text('Deseja realmente remover a matéria "$name"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () {
+              context.read<SubjectsController>().deleteSubject(id);
+              Navigator.pop(ctx);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Remover'),
+          ),
+        ],
+      ),
     );
   }
 }

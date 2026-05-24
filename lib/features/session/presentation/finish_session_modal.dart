@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'session_controller.dart';
+import '../../../core/widgets/gradient_button.dart';
 
 class FinishSessionModal extends StatefulWidget {
   const FinishSessionModal({super.key});
@@ -71,7 +72,8 @@ class _FinishSessionModalState extends State<FinishSessionModal> {
             ),
           ),
           const SizedBox(height: 32),
-          ElevatedButton(
+          GradientButton(
+            label: 'Concluir e Salvar',
             onPressed: () async {
               try {
                 await context.read<SessionController>().stopSession(_focusLevel);
@@ -84,13 +86,6 @@ class _FinishSessionModalState extends State<FinishSessionModal> {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-            child: const Text('Concluir e Salvar', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),

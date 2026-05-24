@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/location/location_service.dart';
 import '../../places/presentation/places_controller.dart';
 import '../../subjects/presentation/subjects_controller.dart';
+import '../../../core/widgets/gradient_button.dart';
 
 class StartSessionModal extends StatefulWidget {
   const StartSessionModal({super.key});
@@ -119,17 +120,11 @@ class _StartSessionModalState extends State<StartSessionModal> {
           _buildSubjectSection(subjectsController),
           const SizedBox(height: 32),
 
-          ElevatedButton(
+          GradientButton(
+            label: 'Começar a Estudar',
             onPressed: (_selectedPlaceId != null && _selectedSubjectId != null && _currentPosition != null)
               ? _startSession
               : null,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-            child: const Text('Começar a Estudar', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -169,6 +164,7 @@ class _StartSessionModalState extends State<StartSessionModal> {
         const Text('Onde você está?', style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
+          key: ValueKey(_selectedPlaceId),
           initialValue: _selectedPlaceId,
           decoration: const InputDecoration(border: OutlineInputBorder()),
           hint: const Text('Selecione um local'),
@@ -224,6 +220,7 @@ class _StartSessionModalState extends State<StartSessionModal> {
         const Text('O que vai estudar?', style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
+          key: ValueKey(_selectedSubjectId),
           initialValue: _selectedSubjectId,
           decoration: const InputDecoration(border: OutlineInputBorder()),
           hint: const Text('Selecione uma matéria'),
@@ -250,7 +247,7 @@ class _StartSessionModalState extends State<StartSessionModal> {
     if (_placeNameController.text.isEmpty || _currentPosition == null) return;
     
     final controller = context.read<PlacesController>();
-    await controller.addPlace(
+    final newPlace = await controller.addPlace(
       _placeNameController.text,
       _currentPosition!.latitude,
       _currentPosition!.longitude,
@@ -258,7 +255,7 @@ class _StartSessionModalState extends State<StartSessionModal> {
     
     if (mounted) {
       setState(() {
-        _selectedPlaceId = controller.places.last.id;
+        _selectedPlaceId = newPlace.id;
         _isCreatingPlace = false;
       });
     }
@@ -268,11 +265,11 @@ class _StartSessionModalState extends State<StartSessionModal> {
     if (_subjectNameController.text.isEmpty) return;
     
     final controller = context.read<SubjectsController>();
-    await controller.addSubject(_subjectNameController.text);
+    final newSubject = await controller.addSubject(_subjectNameController.text);
     
     if (mounted) {
       setState(() {
-        _selectedSubjectId = controller.subjects.last.id;
+        _selectedSubjectId = newSubject.id;
         _isCreatingSubject = false;
       });
     }
@@ -280,10 +277,14 @@ class _StartSessionModalState extends State<StartSessionModal> {
 
   void _startSession() {
     final subjectsController = context.read<SubjectsController>();
+    final placesController = context.read<PlacesController>();
+    
     final subject = subjectsController.subjects.firstWhere((s) => s.id == _selectedSubjectId);
+    final place = placesController.places.firstWhere((p) => p.id == _selectedPlaceId);
     
     Navigator.pop(context, {
       'placeId': _selectedPlaceId,
+      'placeName': place.name,
       'subjectId': _selectedSubjectId,
       'subjectName': subject.name,
       'latitude': _currentPosition!.latitude,

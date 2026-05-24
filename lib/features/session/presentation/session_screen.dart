@@ -88,8 +88,9 @@ class _SessionScreenState extends State<SessionScreen> {
           myLocationButtonEnabled: false,
           mapType: MapType.normal,
           zoomControlsEnabled: false,
+          style: _mapStyle,
           onMapCreated: (mapController) {
-            mapController.setMapStyle(_mapStyle);
+             // Estilo definido na propriedade style do widget
           },
         ),
         Positioned(
@@ -140,7 +141,7 @@ class _SessionScreenState extends State<SessionScreen> {
                         color: Theme.of(context)
                             .colorScheme
                             .outline
-                            .withOpacity(0.1),
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(99),
                       ),
                       child: Text(
@@ -425,6 +426,7 @@ class _SessionScreenState extends State<SessionScreen> {
               subjectId: result['subjectId'],
               subjectName: result['subjectName'],
               placeId: result['placeId'],
+              placeName: result['placeName'],
               latitude: result['latitude'],
               longitude: result['longitude'],
             );
