@@ -14,43 +14,109 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Meu Perfil')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 112),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 138),
         children: [
-          const Center(
-            child: CircleAvatar(
-              radius: 50,
-              child: Icon(Icons.person, size: 50),
+          Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 104,
+                  height: 104,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border:
+                        Border.all(color: const Color(0xFF4B8EFF), width: 2.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF4B8EFF).withOpacity(0.45),
+                        blurRadius: 24,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+                CircleAvatar(
+                  radius: 48,
+                  backgroundColor: const Color(0xFF1E2023),
+                  child: const Icon(Icons.person, size: 48, color: Colors.white),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
           Text(
             user?.name ?? 'Estudante',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           Text(
             user?.email ?? '',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: const Color(0xFF8B90A0)),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 48),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Gerenciar Locais e Matérias'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const DataManagementScreen()),
+          // Card de Configurações
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E2023),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0x33FFFFFF), width: 1),
+            ),
+            child: Column(
+              children: [
+                _buildSettingsItem(
+                  icon: Icons.settings_outlined,
+                  label: 'Gerenciar Locais e Matérias',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const DataManagementScreen()),
+                  ),
+                ),
+              ],
             ),
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.redAccent),
-            title: const Text('Sair da Conta', style: TextStyle(color: Colors.redAccent)),
-            onTap: () => authController.logout(),
+          const SizedBox(height: 32),
+          OutlinedButton.icon(
+            onPressed: () => authController.logout(),
+            icon: const Icon(Icons.logout, size: 20, color: Color(0xFFFFB4AB)),
+            label: const Text(
+              'Sair da conta',
+              style: TextStyle(color: Color(0xFFFFB4AB)),
+            ),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 52),
+              side: const BorderSide(color: Color(0xFFFFB4AB), width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              backgroundColor: Colors.transparent,
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSettingsItem({
+    required IconData icon,
+    required String label,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: const Color(0xFFC1C6D7)),
+      title: Text(label, style: const TextStyle(color: Colors.white)),
+      trailing:
+          trailing ?? const Icon(Icons.chevron_right, color: Color(0xFF8B90A0)),
+      onTap: onTap,
     );
   }
 }

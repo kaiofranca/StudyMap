@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/widgets/gradient_button.dart';
 import 'auth_controller.dart';
 import 'signup_screen.dart';
 
@@ -19,17 +20,41 @@ class _LoginScreenState extends State<LoginScreen> {
     final authController = context.watch<AuthController>();
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 64.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 32),
+            Center(
+              child: Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E2023),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0x4400EEFC), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00EEFC).withOpacity(0.25),
+                      blurRadius: 24,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.explore_outlined,
+                  color: Color(0xFF00EEFC),
+                  size: 36,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
             Text(
               'StudyMap',
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              style: Theme.of(context).textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
                   ),
               textAlign: TextAlign.center,
             ),
@@ -38,7 +63,6 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _emailController,
               decoration: const InputDecoration(
                 labelText: 'Email',
-                border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.emailAddress,
             ),
@@ -47,40 +71,30 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Senha',
-                border: OutlineInputBorder(),
               ),
               obscureText: true,
             ),
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: authController.isLoading
-                  ? null
-                  : () async {
-                      try {
-                        await authController.login(
-                          _emailController.text,
-                          _passwordController.text,
-                        );
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Erro ao entrar: $e')),
-                          );
-                        }
-                      }
-                    },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            if (authController.isLoading)
+              const Center(child: CircularProgressIndicator())
+            else
+              GradientButton(
+                label: 'Entrar',
+                onPressed: () async {
+                  try {
+                    await authController.login(
+                      _emailController.text,
+                      _passwordController.text,
+                    );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro ao entrar: $e')),
+                      );
+                    }
+                  }
+                },
               ),
-              child: authController.isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Entrar'),
-            ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               onPressed: authController.isLoading
@@ -96,11 +110,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                       }
                     },
-              icon: const Icon(Icons.login),
-              label: const Text('Entrar com Google'),
+              icon: const Icon(Icons.account_circle_outlined, size: 20),
+              label: const Text('Continuar com o Google'),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                foregroundColor: const Color(0xFFE2E2E7),
+                minimumSize: const Size(double.infinity, 52),
+                side: const BorderSide(color: Color(0x33FFFFFF), width: 1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                backgroundColor: const Color(0xFF1E2023),
               ),
             ),
             const SizedBox(height: 16),

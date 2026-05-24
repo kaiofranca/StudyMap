@@ -9,6 +9,7 @@ import '../../auth/presentation/auth_controller.dart';
 import '../../main/presentation/data_management_screen.dart';
 import '../../places/presentation/places_controller.dart';
 import '../../../core/location/location_service.dart';
+import '../../../core/widgets/gradient_button.dart';
 
 class SessionScreen extends StatefulWidget {
   const SessionScreen({super.key});
@@ -95,27 +96,10 @@ class _SessionScreenState extends State<SessionScreen> {
           left: 24,
           right: 24,
           bottom: 150,
-          child: ElevatedButton(
-            onPressed: () => _showStartSessionModal(context),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              elevation: 8,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.play_arrow_rounded, size: 28),
-                SizedBox(width: 8),
-                Text(
-                  'Iniciar Sessão',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
+          child: GradientButton(
+                label: 'Iniciar Sessão',
+                onPressed: () => _showStartSessionModal(context)
+              ),
         ),
       ],
     );
