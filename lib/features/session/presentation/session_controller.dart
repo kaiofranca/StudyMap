@@ -123,12 +123,13 @@ class SessionController extends ChangeNotifier {
 
   void _startTimer() {
     _timer?.cancel();
-    if (_currentSession != null && !_isPaused && _lastStartTime != null) {
-      _elapsed = _accumulatedTime + DateTime.now().difference(_lastStartTime!);
-    }
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_currentSession != null && !_isPaused && _lastStartTime != null) {
-        _elapsed = _accumulatedTime + DateTime.now().difference(_lastStartTime!);
+      if (_currentSession != null) {
+        if (!_isPaused && _lastStartTime != null) {
+          _elapsed = _accumulatedTime + DateTime.now().difference(_lastStartTime!);
+        } else {
+          _elapsed = _accumulatedTime;
+        }
         notifyListeners();
       }
     });
