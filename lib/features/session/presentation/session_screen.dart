@@ -50,7 +50,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('StudyMap'),
+        title: Text('StudyMap',style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -105,61 +105,100 @@ class _SessionScreenState extends State<SessionScreen> {
     );
   }
 
-  Widget _buildActiveSessionLayout(BuildContext context, SessionController controller) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildActiveSessionLayout(
+      BuildContext context, SessionController controller) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Text(
-            _formatDuration(controller.elapsed),
-            style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: controller.isPaused 
-                    ? Theme.of(context).colorScheme.outline 
-                    : Theme.of(context).colorScheme.primary,
+          // Cronômetro Centralizado (com padding inferior para subir na tela)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 80.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _formatDuration(controller.elapsed),
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontSize: 64, // Destaque maior para o tempo
+                        fontWeight: FontWeight.bold,
+                        color: controller.isPaused
+                            ? Theme.of(context).colorScheme.outline
+                            : Theme.of(context).colorScheme.primary,
+                      ),
                 ),
-          ),
-          if (controller.isPaused)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                'Sessão Pausada',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.outline,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                if (controller.isPaused)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Text(
+                        'SESSÃO PAUSADA',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.outline,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          const SizedBox(height: 48),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () => controller.isPaused 
-                  ? controller.resumeSession() 
-                  : controller.pauseSession(),
-                icon: Icon(controller.isPaused ? Icons.play_arrow : Icons.pause),
-                label: Text(controller.isPaused ? 'Retomar' : 'Pausar'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                  foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          // Controles na Base (Acima da Floating Nav Bar)
+          Positioned(
+            bottom: 150, // Mesma altura usada no botão de início
+            left: 0,
+            right: 0,
+            child: Row(
+              children: [
+                // Botão Pausar/Retomar
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => controller.isPaused
+                        ? controller.resumeSession()
+                        : controller.pauseSession(),
+                    icon: Icon(
+                        controller.isPaused ? Icons.play_arrow : Icons.pause),
+                    label: Text(controller.isPaused ? 'RETOMAR' : 'PAUSAR'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: controller.isPaused
+                          ? const Color(0xFF00EEFC)
+                          : Colors.white,
+                      side: BorderSide(
+                        color: controller.isPaused
+                            ? const Color(0xFF00EEFC)
+                            : const Color(0x33FFFFFF),
+                        width: 1.5,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              ElevatedButton.icon(
-                onPressed: () => _showFinishSessionModal(context),
-                icon: const Icon(Icons.stop),
-                label: const Text('Finalizar'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Theme.of(context).colorScheme.onError,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                const SizedBox(width: 16),
+                // Botão Finalizar
+                Expanded(
+                  child: GradientButton(
+                    label: 'FINALIZAR',
+                    onPressed: () => _showFinishSessionModal(context),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

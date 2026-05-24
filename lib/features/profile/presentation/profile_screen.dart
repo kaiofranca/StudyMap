@@ -10,11 +10,12 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authController = context.watch<AuthController>();
     final user = authController.user;
+    final String? photoUrl = user?.photoUrl?.replaceAll('=s96-c', '=s200-c');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Meu Perfil')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 138),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 150),
         children: [
           Center(
             child: Stack(
@@ -39,7 +40,11 @@ class ProfileScreen extends StatelessWidget {
                 CircleAvatar(
                   radius: 48,
                   backgroundColor: const Color(0xFF1E2023),
-                  child: const Icon(Icons.person, size: 48, color: Colors.white),
+                  backgroundImage:
+                      photoUrl != null ? NetworkImage(photoUrl) : null,
+                  child: photoUrl == null
+                      ? const Icon(Icons.person, size: 48, color: Colors.white)
+                      : null,
                 ),
               ],
             ),

@@ -32,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           : RefreshIndicator(
               onRefresh: () => statsController.loadStats(),
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 112),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 150),
                 children: [
                   // 1. Ranking de Performance
                   Text(
